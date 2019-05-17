@@ -4,8 +4,12 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
-pylint = "*"
+#pylint = "*"
 ipython = "*"
+pytest = "*"
+pytest-django = "*"
+model-mommy = "*"
+django-extensions = "*"
 
 [packages]
 django = "*"
