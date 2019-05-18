@@ -25,8 +25,12 @@ class Shop(models.Model):
 
 
 class BookInShop(models.Model):
-    # TODO Unique pair
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     in_stock_counter = models.IntegerField(default=0)
     sold_counter = models.IntegerField(default=0)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['book', 'shop'], name='one_book_per_shop')
+        ]
