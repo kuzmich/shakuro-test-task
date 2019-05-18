@@ -1,3 +1,4 @@
+from django.urls import reverse
 from model_mommy import mommy
 import pytest
 
@@ -28,7 +29,7 @@ def test_list_of_shops(client):
     wordery.books.add(man_month, through_defaults={'sold_counter': 90, 'in_stock_counter': 30})
 
     # When someone asks for a list of shops that sell publisher's book
-    resp = client.get('/api/publishers/{}/shops'.format(addison_wesley.id))
+    resp = client.get(reverse('api:shop_list', kwargs={'pid': addison_wesley.id}))
     print(resp.json())
     assert resp.status_code == 200
 
@@ -36,6 +37,7 @@ def test_list_of_shops(client):
     # ordered by the number of books sold, and for each shop it should include
     # the list of Publisher’s books that are currently in stock.
     shops = resp.json()['shops']
+    assert len(shops) == 2
 
     assert (
         {'id': amazon.id,
@@ -62,3 +64,50 @@ def test_list_of_shops(client):
              ]} == shops[1]
     )
 
+
+@pytest.mark.django_db
+def test_mark_book_as_sold(client):
+    from api.models import BookInShop
+
+    # Given a shop sells some books
+    book = mommy.make('Book')
+    shop = mommy.make('Shop')
+    shop.books.add(book, through_defaults={'sold_counter': 30, 'in_stock_counter': 40})
+
+    # When someone requests to mark some copies of the book as sold
+    resp = client.patch(
+        reverse('api:mark_as_sold', kwargs={'shop_id': shop.id, 'book_id': book.id}),
+        {'sold': 10},
+        content_type='application/json'
+    )
+    assert resp.status_code == 200
+
+    # Then this info is stored in the db
+    bs = BookInShop.objects.get(shop_id=shop.id, book_id=book.id)
+    assert bs.sold_counter == 40
+    assert bs.in_stock_counter == 30
+
+
+@pytest.mark.django_db
+def test_mark_book_as_sold__too_many(client):
+    from api.models import BookInShop
+
+    # Given a shop sells some books
+    book = mommy.make('Book')
+    shop = mommy.make('Shop')
+    shop.books.add(book, through_defaults={'sold_counter': 30, 'in_stock_counter': 40})
+
+    # When someone requests to mark too many copies of the book as sold
+    resp = client.patch(
+        reverse('api:mark_as_sold', kwargs={'shop_id': shop.id, 'book_id': book.id}),
+        {'sold': 100},
+        content_type='application/json'
+    )
+
+    # Then API answers with 400 Bad Request
+    assert resp.status_code == 400
+
+    # and the info in the db is not changed
+    bs = BookInShop.objects.get(shop_id=shop.id, book_id=book.id)
+    assert bs.sold_counter == 30
+    assert bs.in_stock_counter == 40

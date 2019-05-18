@@ -1,3 +1,5 @@
+import json
+
 from django.db.models import Sum
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -25,3 +27,17 @@ def shop_list(request, pid):
                                   for bookinshop in qs]
 
     return JsonResponse({'shops': shops})
+
+
+def mark_as_sold(request, shop_id, book_id):
+    bs = get_object_or_404(BookInShop, shop_id=shop_id, book_id=book_id)
+    payload = json.loads(request.body)
+
+    if bs.in_stock_counter < payload['sold']:
+        return JsonResponse({'message': 'Not enough books in stock'}, status=400)
+
+    bs.sold_counter += payload['sold']
+    bs.in_stock_counter -= payload['sold']
+    bs.save()
+
+    return JsonResponse({})
