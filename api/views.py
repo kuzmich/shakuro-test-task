@@ -31,6 +31,9 @@ def shop_list(request, pid):
 
 def mark_as_sold(request, shop_id, book_id):
     bs = get_object_or_404(BookInShop, shop_id=shop_id, book_id=book_id)
+
+    # TODO JSON schema validation intentionally left behind
+    # but in production ready code one should use DRF + some package for validation
     payload = json.loads(request.body)
 
     if bs.in_stock_counter < payload['sold']:
