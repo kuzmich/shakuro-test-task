@@ -1,0 +1,28 @@
+- model: api.bookinshop
+  pk: 1
+  fields:
+    book: 1
+    shop: 1
+    in_stock_counter: 200
+    sold_counter: 100
+- model: api.bookinshop
+  pk: 2
+  fields:
+    book: 2
+    shop: 1
+    in_stock_counter: 2000
+    sold_counter: 500
+- model: api.bookinshop
+  pk: 3
+  fields:
+    book: 3
+    shop: 2
+    in_stock_counter: 70
+    sold_counter: 30
+- model: api.bookinshop
+  pk: 4
+  fields:
+    book: 4
+    shop: 3
+    in_stock_counter: 50
+    sold_counter: 50

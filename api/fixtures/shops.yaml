@@ -1,0 +1,12 @@
+- model: api.shop
+  pk: 1
+  fields:
+    name: Amazon
+- model: api.shop
+  pk: 2
+  fields:
+    name: Hive
+- model: api.shop
+  pk: 3
+  fields:
+    name: Wordery

@@ -1,0 +1,12 @@
+- model: api.publisher
+  pk: 1
+  fields:
+    name: "Addison\u2013Wesley"
+- model: api.publisher
+  pk: 2
+  fields:
+    name: Microsoft Press
+- model: api.publisher
+  pk: 3
+  fields:
+    name: The MIT Press
